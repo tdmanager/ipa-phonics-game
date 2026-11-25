@@ -1,0 +1,8 @@
+server.js
+package.json
+package-lock.json
+README.md
+tests/
+.git/
+.gitignore
+.assetsignore

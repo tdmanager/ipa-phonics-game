@@ -1,0 +1,17 @@
+{
+  "name": "音标奇趣岛 - 儿童自然拼读与音标游戏",
+  "short_name": "音标奇趣岛",
+  "description": "通过听音捉精灵、自然拼词工坊、记忆翻翻乐轻松学会 48 个英语国际音标，掌握听音记单词技巧。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFBF4",
+  "theme_color": "#FF7A59",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='42' fill='%23FF7A59'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='104'>🎵</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

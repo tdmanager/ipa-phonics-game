@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#FF7A59" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="音标奇趣岛" />
+  <title>音标奇趣岛 - 听音拼词魔法游戏</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <!-- 顶部状态栏 -->
+    <header class="top-bar">
+      <div class="brand">
+        <span class="brand-logo" aria-hidden="true">🎵</span>
+        <div class="brand-text">
+          <h1>音标奇趣岛</h1>
+          <p class="brand-sub">学会发音，秒记单词</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button id="btn-badges" class="pill-stat" type="button" aria-label="查看成长与勋章">
+          <span class="pill-icon">⭐</span>
+          <span id="stat-stars">0</span>
+        </button>
+        <button id="btn-progress" class="pill-stat pill-green" type="button" aria-label="已掌握音标数">
+          <span class="pill-icon">🏆</span>
+          <span id="stat-mastered">0/48</span>
+        </button>
+        <button id="btn-settings" class="icon-btn" type="button" aria-label="语音与游戏设置">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- 语音不可用兜底提示 -->
+    <div id="speech-banner" class="speech-banner hidden" role="status">
+      当前浏览器暂不支持语音朗读，建议使用手机系统浏览器、Chrome 或 Safari 打开获得最佳体验。
+    </div>
+
+    <!-- 主内容区域 -->
+    <main id="main-content" class="main-content">
+      <!-- 视图 1：音标图鉴岛 -->
+      <section id="view-explore" class="view active" aria-label="音标图鉴岛">
+        <div class="hero-tip">
+          <div class="hero-tip-left">
+            <span class="hero-badge">学发音秘籍</span>
+            <p>点一点音标精灵听发音，记住<strong>字母组合魔法</strong>，听音就能写单词！</p>
+          </div>
+        </div>
+
+        <div id="category-tabs" class="chip-scroll" role="tablist" aria-label="音标家族筛选"></div>
+
+        <div id="category-desc" class="category-desc"></div>
+
+        <div id="ipa-grid" class="ipa-grid"></div>
+      </section>
+
+      <!-- 视图 2：听音捉精灵 -->
+      <section id="view-catch" class="view" aria-label="听音捉精灵">
+        <div class="game-header-bar">
+          <div id="catch-scope-chips" class="chip-scroll"></div>
+          <div class="combo-pill" id="catch-combo-pill">🔥 连击 <span id="catch-combo">0</span></div>
+        </div>
+
+        <div class="game-card catch-stage">
+          <div class="stage-prompt-meta">
+            <span class="prompt-emoji" id="catch-emoji">🐱</span>
+            <div class="prompt-word-info">
+              <div class="prompt-zh" id="catch-zh">小猫</div>
+              <div class="prompt-hint" id="catch-hint">听听单词里高亮的音标是哪一个？</div>
+            </div>
+          </div>
+
+          <div class="audio-controls">
+            <button id="btn-catch-play" class="big-play-btn" type="button">
+              <span class="play-wave">🔊</span>
+              <span class="play-label">点我听发音</span>
+            </button>
+            <button id="btn-catch-slow" class="sub-play-btn" type="button">
+              🐢 慢速听
+            </button>
+          </div>
+
+          <div id="catch-word-preview" class="catch-word-preview"></div>
+
+          <div id="catch-options" class="catch-options"></div>
+
+          <div id="catch-feedback" class="feedback-box hidden"></div>
+
+          <button id="btn-catch-next" class="primary-btn full-btn hidden" type="button">
+            下一题 ➡️
+          </button>
+        </div>
+      </section>
+
+      <!-- 视图 3：音标拼词工坊 -->
+      <section id="view-spell" class="view" aria-label="音标拼词工坊">
+        <div class="game-header-bar">
+          <div id="spell-level-chips" class="chip-scroll"></div>
+          <div class="combo-pill combo-blue">🪄 已拼 <span id="spell-count">0</span> 词</div>
+        </div>
+
+        <div class="game-card spell-stage">
+          <div class="spell-hero">
+            <div class="spell-emoji-wrap" id="spell-emoji">🐱</div>
+            <div class="spell-meta">
+              <div class="spell-zh" id="spell-zh">小猫</div>
+              <div class="spell-ipa" id="spell-ipa">/kæt/</div>
+            </div>
+            <button id="btn-spell-speak" class="round-sound-btn" type="button" aria-label="听单词发音">
+              🔊
+            </button>
+          </div>
+
+          <p class="spell-guide">按从左到右的音标顺序，点选对应的字母魔法块拼出单词：</p>
+
+          <!-- 音标对应槽位 -->
+          <div id="spell-slots" class="spell-slots"></div>
+
+          <!-- 可选字母魔法块 -->
+          <div id="spell-tiles" class="spell-tiles"></div>
+
+          <div class="spell-actions-row">
+            <button id="btn-spell-clear" class="ghost-btn" type="button">🔄 清空重拼</button>
+            <button id="btn-spell-hint" class="ghost-btn" type="button">💡 提示一下</button>
+          </div>
+
+          <div id="spell-feedback" class="feedback-box hidden"></div>
+
+          <button id="btn-spell-next" class="primary-btn full-btn hidden" type="button">
+            拼下一个单词 ➡️
+          </button>
+        </div>
+      </section>
+
+      <!-- 视图 4：记忆翻翻乐 -->
+      <section id="view-memory" class="view" aria-label="音标记忆翻翻乐">
+        <div class="game-header-bar">
+          <div id="memory-scope-chips" class="chip-scroll"></div>
+          <div class="memory-stats">
+            <span>步数 <strong id="memory-moves">0</strong></span>
+            <span>配对 <strong id="memory-pairs">0/6</strong></span>
+          </div>
+        </div>
+
+        <div class="game-card memory-stage">
+          <div class="memory-tip-row">
+            <span>把「音标卡」和「发光单词卡」配成一对！</span>
+            <button id="btn-memory-restart" class="mini-btn" type="button">🔀 重新发牌</button>
+          </div>
+
+          <div id="memory-board" class="memory-board"></div>
+
+          <div id="memory-victory" class="victory-banner hidden">
+            <div class="victory-emoji">🎉</div>
+            <h3>太棒了！全部配对成功！</h3>
+            <p id="memory-victory-desc"></p>
+            <button id="btn-memory-again" class="primary-btn" type="button">再来一局 🃏</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部手机主导航 -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item active" data-view="explore" type="button">
+        <span class="nav-icon">🏝️</span>
+        <span class="nav-label">音标岛</span>
+      </button>
+      <button class="nav-item" data-view="catch" type="button">
+        <span class="nav-icon">🎧</span>
+        <span class="nav-label">捉精灵</span>
+      </button>
+      <button class="nav-item" data-view="spell" type="button">
+        <span class="nav-icon">🪄</span>
+        <span class="nav-label">拼词坊</span>
+      </button>
+      <button class="nav-item" data-view="memory" type="button">
+        <span class="nav-icon">🃏</span>
+        <span class="nav-label">翻翻乐</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- 音标详情魔法学习弹窗 -->
+  <div id="modal-ipa" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-ipa-title">
+    <div class="modal-backdrop" data-close-modal="modal-ipa"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <button class="modal-close" type="button" data-close-modal="modal-ipa" aria-label="关闭">✕</button>
+
+      <div class="ipa-modal-head">
+        <div class="ipa-hero-symbol" id="detail-symbol">/æ/</div>
+        <div class="ipa-hero-info">
+          <h2 id="modal-ipa-title">梅花大嘴音</h2>
+          <div class="ipa-tags">
+            <span id="detail-cat-tag" class="tag">短元音</span>
+            <span id="detail-voice-tag" class="tag tag-voice">声带震动</span>
+          </div>
+        </div>
+        <button id="btn-detail-speak" class="round-sound-btn" type="button" aria-label="播放发音">🔊</button>
+      </div>
+
+      <!-- 动态口型图 + 要领 -->
+      <div class="mouth-card">
+        <div id="detail-mouth-svg" class="mouth-svg-box" aria-hidden="true"></div>
+        <div class="mouth-text">
+          <div class="mouth-chant" id="detail-chant"></div>
+          <p class="mouth-tip" id="detail-mouth-tip"></p>
+        </div>
+      </div>
+
+      <!-- 双胞胎音标对比 -->
+      <div id="detail-pair-box" class="pair-box hidden">
+        <span>👯 易混淆好朋友：</span>
+        <button id="btn-detail-pair" class="pair-btn" type="button"></button>
+      </div>
+
+      <!-- 记单词魔法规律 -->
+      <div class="rules-section">
+        <h3>✨ 记单词魔法（点单词听发音）</h3>
+        <div id="detail-rules" class="rules-list"></div>
+      </div>
+
+      <div class="modal-footer-btns">
+        <button id="btn-detail-slow" class="ghost-btn" type="button">🐢 慢速跟读</button>
+        <button id="btn-detail-master" class="primary-btn" type="button">⭐ 我学会啦</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 成长勋章弹窗 -->
+  <div id="modal-badges" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-badges-title">
+    <div class="modal-backdrop" data-close-modal="modal-badges"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <button class="modal-close" type="button" data-close-modal="modal-badges" aria-label="关闭">✕</button>
+      <h2 id="modal-badges-title" class="sheet-title">🏆 我的音标成长册</h2>
+
+      <div class="progress-summary-card">
+        <div class="progress-row">
+          <span>已点亮音标</span>
+          <strong id="summary-mastered-text">0 / 48</strong>
+        </div>
+        <div class="progress-bar-track">
+          <div id="summary-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <div class="summary-mini-grid">
+          <div class="summary-mini-item">
+            <span class="mini-num" id="summary-stars">0</span>
+            <span class="mini-label">总星星</span>
+          </div>
+          <div class="summary-mini-item">
+            <span class="mini-num" id="summary-spelled">0</span>
+            <span class="mini-label">拼会单词</span>
+          </div>
+          <div class="summary-mini-item">
+            <span class="mini-num" id="summary-mistakes">0</span>
+            <span class="mini-label">待巩固</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub-heading">✨ 荣誉勋章墙</h3>
+      <div id="badges-grid" class="badges-grid"></div>
+    </div>
+  </div>
+
+  <!-- 语音与设置弹窗 -->
+  <div id="modal-settings" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title">
+    <div class="modal-backdrop" data-close-modal="modal-settings"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <button class="modal-close" type="button" data-close-modal="modal-settings" aria-label="关闭">✕</button>
+      <h2 id="modal-settings-title" class="sheet-title">⚙️ 发音与家长设置</h2>
+
+      <div class="setting-group">
+        <label class="setting-label">英语发音口音</label>
+        <div class="segmented-control" id="setting-accent">
+          <button type="button" data-accent="en-GB" class="seg-btn active">🇬🇧 英式发音（推荐）</button>
+          <button type="button" data-accent="en-US" class="seg-btn">🇺🇸 美式发音</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label">朗读语速</label>
+        <div class="segmented-control" id="setting-rate">
+          <button type="button" data-rate="0.65" class="seg-btn">🐢 慢速</button>
+          <button type="button" data-rate="0.82" class="seg-btn active">🐥 儿童标准</button>
+          <button type="button" data-rate="1.0" class="seg-btn">🚀 原速</button>
+        </div>
+      </div>
+
+      <div class="setting-group setting-row">
+        <div>
+          <div class="setting-label">游戏互动音效</div>
+          <div class="setting-sub">答对欢呼与点击反馈声</div>
+        </div>
+        <button id="setting-sfx-toggle" type="button" class="toggle-pill on" aria-pressed="true">开启</button>
+      </div>
+
+      <div class="setting-group">
+        <button id="btn-test-voice" class="ghost-btn full-btn" type="button">🔊 试听当前发音（apple）</button>
+      </div>
+
+      <div class="setting-danger">
+        <button id="btn-reset-progress" class="danger-link" type="button">重置学习记录</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 轻提示与撒花庆祝层 -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  <div id="confetti-layer" class="confetti-layer" aria-hidden="true"></div>
+
+  <script src="js/ipa-data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game-logic.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
