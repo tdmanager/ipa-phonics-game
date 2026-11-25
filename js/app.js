@@ -385,6 +385,8 @@
 
     if (autoPlay) {
       playCatchAudio(false);
+    } else {
+      sound.preload(q.promptWord);
     }
   }
 
@@ -392,7 +394,8 @@
     if (!runtime.catchQuestion) return;
     const playBtn = $('btn-catch-play');
     sound.speak(runtime.catchQuestion.promptWord, {
-      rate: slow ? Math.max(0.55, state.settings.rate - 0.22) : state.settings.rate,
+      slow,
+      rate: slow ? Math.max(0.65, state.settings.rate - 0.16) : state.settings.rate,
       onStart: () => playBtn.classList.add('playing'),
       onEnd: () => playBtn.classList.remove('playing')
     });
@@ -483,6 +486,8 @@
 
     if (autoPlay) {
       sound.speak(puzzle.word);
+    } else {
+      sound.preload(puzzle.word);
     }
   }
 
@@ -898,7 +903,7 @@
   }
 
   function init() {
-    if (!sound.isSpeechSupported()) {
+    if (!sound.isAudioAvailable()) {
       $('speech-banner').classList.remove('hidden');
     }
     bindEvents();
